@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/vulkansdk/senr/refs/heads/main/clr.png" width="250" alt="Compact Launcher icon"/>
+  <img src="https://i.ibb.co/GfgSJnV0/android-chrome-192x192.png" width="250" alt="Compact Launcher icon"/>
 </p>
 
 Compact Launcher
