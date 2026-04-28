@@ -19,8 +19,8 @@ BEGIN
             VALUE "FileVersion",      "1.1.0.0"
             VALUE "ProductName",      "Compact Launcher"
             VALUE "ProductVersion",   "1.1.0.0"
-            VALUE "LegalCopyright",   "Copyright (C) 2026 vulkansdk"
-            VALUE "CompanyName",      "vulkansdk"
+            VALUE "LegalCopyright",   "Copyright (C) 2026 bswap64"
+            VALUE "CompanyName",      "bswap64"
             VALUE "OriginalFilename", "CompactLauncher.exe"
             VALUE "InternalName",     "Compact Launcher"
         END
