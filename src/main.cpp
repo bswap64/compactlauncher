@@ -1,5 +1,6 @@
 #include "launcher.h"
 #include "main_frame.h"
+#include "discord_rpc.h"
 #include <QApplication>
 #include <QCoreApplication>
 #include <QIcon>
@@ -27,8 +28,13 @@ int main(int argc, char* argv[]) {
     Logger::instance().open(logPath);
     LOG("OnInit started");
 
+    DiscordRPC::instance().init("1366741661492752397");
+
     MainFrame w;
     w.show();
 
-    return app.exec();
+    int ret = app.exec();
+
+    DiscordRPC::instance().shutdown();
+    return ret;
 }
