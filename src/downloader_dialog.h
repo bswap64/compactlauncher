@@ -155,6 +155,9 @@ private slots:
         m_downloadBtn->setEnabled(false);
         m_closeBtn->setEnabled(false);
         m_cancelBtn->setEnabled(true);
+        m_versionCombo->setEnabled(false);
+        m_showAll->setEnabled(false);
+        m_forceRedownload->setEnabled(false);
         m_currentDownloadVersion = version;
 
         m_progressLabel->setText(QString("Downloading %1...").arg(QString::fromStdString(version)));
@@ -203,6 +206,9 @@ private slots:
         m_downloadBtn->setEnabled(true);
         m_cancelBtn->setEnabled(false);
         m_closeBtn->setEnabled(true);
+        m_versionCombo->setEnabled(true);
+        m_showAll->setEnabled(true);
+        m_forceRedownload->setEnabled(true);
         populateVersions();
     }
 
@@ -222,6 +228,9 @@ private slots:
         m_downloadBtn->setEnabled(true);
         m_cancelBtn->setEnabled(false);
         m_closeBtn->setEnabled(true);
+        m_versionCombo->setEnabled(true);
+        m_showAll->setEnabled(true);
+        m_forceRedownload->setEnabled(true);
         m_currentDownloadVersion.clear();
         m_cfg->setValue(CFG_REDOWNLOAD, m_forceRedownload->isChecked());
         populateVersions();
@@ -242,6 +251,9 @@ private slots:
         m_downloadBtn->setEnabled(true);
         m_cancelBtn->setEnabled(false);
         m_closeBtn->setEnabled(true);
+        m_versionCombo->setEnabled(true);
+        m_showAll->setEnabled(true);
+        m_forceRedownload->setEnabled(true);
         populateVersions();
     }
 
