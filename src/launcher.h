@@ -84,9 +84,9 @@ struct LibraryInfo {
 };
 
 
-inline const std::atomic<bool> g_notCancelled{false};
+inline const std::atomic<bool> g_cancelled{false};
 bool        httpDownloadToFile(const std::string& url, const std::string& dest,
-                               const std::atomic<bool>& cancelled = g_notCancelled);
+                               const std::atomic<bool>& cancelled = g_cancelled);
 std::string httpGetString(const std::string& url);
 
 void         mkdirRecursive(const std::string& path);
