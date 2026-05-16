@@ -351,8 +351,6 @@ private slots:
                     writeFileText(m_workDir + "/launch_string.txt", "\"" + java + "\" " + args);
                 }
 
-                writeFileText(m_workDir + "/launch_string.txt", "\"" + java + "\" " + args);
-
                 QMetaObject::invokeMethod(this, [this]() {
                     m_statusLabel->setText("Game launched!");
                     if (!m_cfg->value(CFG_KEEP_OPEN, DEFAULT_KEEP_OPEN).toBool())
