@@ -12,6 +12,12 @@ The goal of the project is to keep the launcher lightweight, predictable and eas
 
 Compact Launcher is designed to be fast and compact, avoiding unnecessary features and complexity while still providing the essential functionality needed to launch and manage Minecraft instances.
 
+## Screenshots
+
+<p>
+  <img src="https://i.ibb.co/nsSbctMq/screen1.png" width="639" alt="Compact Launcher main window"/>
+</p>
+
 ## Contributing
 If you want to contribute to the project, please join the [Discord](https://discord.gg/GX3EsZ7UBK) server first and discuss your idea there.
 
