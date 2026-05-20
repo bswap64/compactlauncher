@@ -43,7 +43,7 @@ public:
         m_workDir = QCoreApplication::applicationDirPath().toStdString();
         for (char& c : m_workDir) if (c == '\\') c = '/';
 
-        m_cfg = new QSettings("Compact Launcher", "Compact Launcher", this);
+        m_cfg = new QSettings(QCoreApplication::applicationDirPath() + "/settings.ini", QSettings::IniFormat, this);
 
         auto* central = new QWidget(this);
         setCentralWidget(central);
@@ -57,17 +57,22 @@ public:
         m_nameCtrl->setPlaceholderText("Nickname");
         sizer->addWidget(m_nameCtrl);
 
+        /*
+        i decided to increase the minimum ram from 350mb to 512mb because 350mb simply isn't enough.
+        (512mb isn't enough either, lol, but at least it's a little better.)
+        */
+
         {
             int maxRam = getTotalRamMB();
             int curRam = m_cfg->value(CFG_RAM, DEFAULT_RAM).toInt();
-            if (curRam < 350)   curRam = 350;
+            if (curRam < 512)   curRam = 512;
             if (curRam > maxRam) curRam = maxRam;
             m_ramCtrl = new QSpinBox();
-            m_ramCtrl->setRange(350, maxRam);
+            m_ramCtrl->setRange(512, maxRam);
             m_ramCtrl->setValue(curRam);
             m_ramCtrl->setSuffix(" MB");
             m_ramCtrl->setToolTip(
-                QString("RAM to allocate (350 \u2013 %1 MB)").arg(maxRam));
+                QString("RAM to allocate (512 \u2013 %1 MB)").arg(maxRam));
         }
         sizer->addWidget(m_ramCtrl);
 
