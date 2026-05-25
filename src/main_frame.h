@@ -590,7 +590,14 @@ private:
                 const auto& jvmArr = j["arguments"]["jvm"];
                 for (size_t i = 0; i < jvmArr.arr.size(); i++) {
                     if (jvmArr[i].isString()) {
-                        jvmArgs += " " + jvmArr[i].asString();
+                        std::string arg = jvmArr[i].asString();
+#ifdef _WIN32
+                        // fix: wrap args containing spaces in quotes so CreateProcessA treats them as a single argument
+                        if (arg.find(' ') != std::string::npos)
+                            jvmArgs += " \"" + arg + "\"";
+                        else
+#endif
+                        jvmArgs += " " + arg;
                     } else if (jvmArr[i].isObject() && isRuleAllowed(jvmArr[i])) {
                         appendArgValue(jvmArgs, jvmArr[i]["value"]);
                     }
