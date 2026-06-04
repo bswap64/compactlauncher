@@ -32,6 +32,7 @@ constexpr const char* CFG_RAM              = "Player/Ram";
 constexpr const char* CFG_CHOSEN_VER       = "Game/ChosenVersion";
 constexpr const char* CFG_JAVA_PATH        = "Java/CustomPath";
 constexpr const char* CFG_USE_CUSTOM_JAVA  = "Java/UseCustom";
+constexpr const char* CFG_JAVA_SELECTED    = "Java/SelectedPath";
 constexpr const char* CFG_USE_CUSTOM_ARGS  = "Args/UseCustom";
 constexpr const char* CFG_CUSTOM_ARGS      = "Args/Custom";
 constexpr const char* CFG_DL_THREADS       = "Download/Threads";
@@ -67,7 +68,7 @@ constexpr const char* DEFAULT_JVM_ARGS_OLD =
 constexpr const char* VERSIONS_MANIFEST_URL =
     "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 
-constexpr const char* LAUNCHER_VERSION = "1.1.4";
+constexpr const char* LAUNCHER_VERSION = "1.1.5";
 
 struct DownloadEntry {
     std::string url;

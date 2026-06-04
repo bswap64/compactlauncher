@@ -161,10 +161,12 @@ private:
         auto javas = findJavaInstalls();
         for (auto& j : javas) m_javaCombo->addItem(QString::fromStdString(j));
         if (!javas.empty()) {
-            m_javaCombo->setCurrentIndex(0);
+            QString savedJava = m_cfg->value(CFG_JAVA_SELECTED, "").toString();
+            int savedIdx = savedJava.isEmpty() ? -1 : m_javaCombo->findText(savedJava);
+            m_javaCombo->setCurrentIndex(savedIdx >= 0 ? savedIdx : 0);
             m_playBtn->setEnabled(!m_versionCombo->currentText().contains("No versions"));
         } else {
-            m_javaCombo->addItem("Java not found — install Java first");
+            m_javaCombo->addItem("Java not found! - install Java first");
             m_javaCombo->setCurrentIndex(0);
             m_javaCombo->setEnabled(false);
             m_playBtn->setEnabled(false);
@@ -270,6 +272,8 @@ private slots:
         m_cfg->setValue(CFG_NAME, QString::fromStdString(name));
         m_cfg->setValue(CFG_RAM, QString::fromStdString(std::to_string(ram)));
         m_cfg->setValue(CFG_CHOSEN_VER, QString::fromStdString(version));
+        if (!m_cfg->value(CFG_USE_CUSTOM_JAVA, DEFAULT_USE_CUSTOM_JAVA).toBool())
+            m_cfg->setValue(CFG_JAVA_SELECTED, m_javaCombo->currentText());
         m_cfg->sync();
 
         m_statusLabel->setText(QString("Launching %1...").arg(QString::fromStdString(version)));

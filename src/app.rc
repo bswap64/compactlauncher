@@ -16,9 +16,9 @@ BEGIN
         BLOCK "040904B0"
         BEGIN
             VALUE "FileDescription",  "Compact Launcher"
-            VALUE "FileVersion",      "1.1.4.0"
+            VALUE "FileVersion",      "1.1.5.0"
             VALUE "ProductName",      "Compact Launcher"
-            VALUE "ProductVersion",   "1.1.4.0"
+            VALUE "ProductVersion",   "1.1.5.0"
             VALUE "LegalCopyright",   "Copyright (C) 2026 bswap64"
             VALUE "CompanyName",      "bswap64"
             VALUE "OriginalFilename", "CompactLauncher.exe"
