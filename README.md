@@ -15,7 +15,7 @@ Compact Launcher is designed to be fast and compact, avoiding unnecessary featur
 ## Screenshots
 
 <p>
-  <img src="https://i.ibb.co/nsSbctMq/screen1.png" width="639" alt="Compact Launcher main window"/>
+  <img src="https://i.ibb.co/gZGYXXxg/Screenshot-2026-06-04-20-24-19.png" width="639" alt="Compact Launcher main window"/>
 </p>
 
 ## Contributing
