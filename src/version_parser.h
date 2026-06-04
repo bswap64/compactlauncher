@@ -344,7 +344,8 @@ inline void extractNatives(
         std::string tmpDir = nativesDir + "/_extract_tmp";
         fs::create_directories(tmpDir);
         std::string cmd = "unzip -o '" + jarPath + "' -d '" + tmpDir + "' '*.so' '*.jnilib' '*.dylib' 2>/dev/null";
-        (void)system(cmd.c_str());
+        int sysRet = system(cmd.c_str());
+        (void)sysRet;
         for (auto& entry : fs::recursive_directory_iterator(tmpDir, fs::directory_options::skip_permission_denied)) {
             if (!entry.is_regular_file()) continue;
             std::string ext = entry.path().extension().string();
