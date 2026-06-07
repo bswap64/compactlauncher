@@ -43,8 +43,11 @@ jobs:
         run: |
           cd build
           windeployqt6 CompactLauncher.exe
-          ldd CompactLauncher.exe | grep mingw | awk '{print $3}' | xargs -I{} cp {} .
-          ldd updater.exe | grep mingw | awk '{print $3}' | xargs -I{} cp {} .
+          ldd CompactLauncher.exe updater.exe \
+            | grep -i mingw \
+            | awk '{print $3}' \
+            | sort -u \
+            | xargs -I{} cp {} .
 
       - name: Zip
         run: |
