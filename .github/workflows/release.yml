@@ -52,7 +52,6 @@ jobs:
 
       - name: Zip
         run: |
-          TAG="${{ github.ref_name }}"
           cd build
           7z a "../CompactLauncher-windows-x64.zip" \
             CompactLauncher.exe \
@@ -68,6 +67,7 @@ jobs:
 
       - name: Generate release notes
         id: notes
+        shell: bash
         run: |
           TAG="${{ github.ref_name }}"
           REPO="${{ github.repository }}"
