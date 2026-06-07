@@ -42,6 +42,7 @@ constexpr const char* CFG_KEEP_OPEN        = "Launcher/KeepOpen";
 constexpr const char* CFG_SAVE_LAUNCH_STR  = "Launcher/SaveLaunchString";
 constexpr const char* CFG_SHOW_ALL_VER     = "Download/ShowAllVersions";
 constexpr const char* CFG_REDOWNLOAD       = "Download/RedownloadAll";
+constexpr const char* CFG_AUTO_UPDATE      = "Launcher/AutoUpdate";
 
 constexpr const char* DEFAULT_NAME         = "Player";
 constexpr const char* DEFAULT_RAM          = "2048";
@@ -53,6 +54,7 @@ constexpr bool        DEFAULT_KEEP_OPEN    = false;
 constexpr bool        DEFAULT_SAVE_LAUNCH  = false;
 constexpr bool        DEFAULT_SHOW_ALL     = false;
 constexpr bool        DEFAULT_REDOWNLOAD   = false;
+constexpr bool        DEFAULT_AUTO_UPDATE  = true;
 constexpr bool        DEFAULT_USE_CUSTOM_JAVA = false;
 constexpr bool        DEFAULT_USE_CUSTOM_ARGS = false;
 
@@ -68,7 +70,7 @@ constexpr const char* DEFAULT_JVM_ARGS_OLD =
 constexpr const char* VERSIONS_MANIFEST_URL =
     "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 
-constexpr const char* LAUNCHER_VERSION = "1.1.5";
+constexpr const char* LAUNCHER_VERSION = "1.1.2";
 
 struct DownloadEntry {
     std::string url;
