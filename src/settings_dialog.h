@@ -51,6 +51,10 @@ public:
         m_dlMissing  = new QCheckBox("Download missing libraries on launch");
         m_keepOpen   = new QCheckBox("Keep launcher open after game starts");
         m_saveLaunch = new QCheckBox("Save full launch string to launch_string.txt");
+#ifdef _WIN32
+        m_autoUpdate = new QCheckBox("Check for launcher updates on startup");
+        m_autoUpdate->setChecked(cfg->value(CFG_AUTO_UPDATE, DEFAULT_AUTO_UPDATE).toBool());
+#endif
 
         m_asyncDl->setChecked(cfg->value(CFG_ASYNC_DL, DEFAULT_ASYNC_DL).toBool());
         m_dlMissing->setChecked(cfg->value(CFG_DL_MISSING_LIBS, DEFAULT_DL_MISSING).toBool());
@@ -61,6 +65,9 @@ public:
         main->addWidget(m_dlMissing);
         main->addWidget(m_keepOpen);
         main->addWidget(m_saveLaunch);
+#ifdef _WIN32
+        main->addWidget(m_autoUpdate);
+#endif
 
         auto* btns = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         main->addWidget(btns);
@@ -82,6 +89,9 @@ private slots:
         m_cfg->setValue(CFG_DL_MISSING_LIBS, m_dlMissing->isChecked());
         m_cfg->setValue(CFG_KEEP_OPEN,       m_keepOpen->isChecked());
         m_cfg->setValue(CFG_SAVE_LAUNCH_STR, m_saveLaunch->isChecked());
+#ifdef _WIN32
+        m_cfg->setValue(CFG_AUTO_UPDATE,     m_autoUpdate->isChecked());
+#endif
         m_cfg->sync();
         accept();
     }
@@ -94,6 +104,9 @@ private:
     QCheckBox*  m_dlMissing;
     QCheckBox*  m_keepOpen;
     QCheckBox*  m_saveLaunch;
+#ifdef _WIN32
+    QCheckBox*  m_autoUpdate;
+#endif
     QLineEdit*  m_javaPath;
     QLineEdit*  m_customArgs;
     QSpinBox*   m_threads;
