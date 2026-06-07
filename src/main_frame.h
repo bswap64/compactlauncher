@@ -5,6 +5,9 @@
 #include "download_manager.h"
 #include "settings_dialog.h"
 #include "downloader_dialog.h"
+#ifdef _WIN32
+#include "auto_updater.h"
+#endif
 #include <QMainWindow>
 #include <QWidget>
 #include <QVBoxLayout>
@@ -122,6 +125,10 @@ public:
         connect(m_downloadBtn, &QPushButton::clicked, this, &MainFrame::onDownloader);
         connect(m_deleteBtn,   &QPushButton::clicked, this, &MainFrame::onDeleteVersion);
         connect(m_settingsBtn, &QPushButton::clicked, this, &MainFrame::onSettings);
+
+#ifdef _WIN32
+        checkForUpdates(this, m_cfg, {m_playBtn, m_downloadBtn, m_deleteBtn, m_settingsBtn});
+#endif
     }
 
     ~MainFrame() {
@@ -266,7 +273,7 @@ private slots:
             QMessageBox::critical(this, "Error", "No version selected!"); return;
         }
         if (java.empty() || !fs::exists(java)) {
-            QMessageBox::critical(this, "Error", "Java not found!\nCheck Settings → Custom Java path."); return;
+            QMessageBox::critical(this, "Error", "Java not found!\nCheck Settings :: Custom Java path."); return;
         }
 
         m_cfg->setValue(CFG_NAME, QString::fromStdString(name));
