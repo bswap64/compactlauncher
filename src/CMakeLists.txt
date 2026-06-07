@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(CompactLauncher VERSION 1.1.6 LANGUAGES CXX)
+project(CompactLauncher VERSION 1.1.7 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -57,6 +57,11 @@ else()
     endif()
     find_package(CURL REQUIRED)
     target_link_libraries(CompactLauncher PRIVATE CURL::libcurl)
+
+    add_executable(updater updater.cpp)
+    set_target_properties(updater PROPERTIES OUTPUT_NAME "updater")
+    target_link_libraries(updater PRIVATE z)
+    target_compile_options(updater PRIVATE -Wall -O2)
 endif()
 
 if(MSVC)

@@ -1,12 +1,17 @@
-#ifdef _WIN32
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <zlib.h>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <filesystem>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#else
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
 
 namespace fs = std::filesystem;
 
@@ -134,46 +139,33 @@ static bool unzipFile(const std::string& zipPath, const std::string& destDir) {
     return true;
 }
 
-static void waitForPid(DWORD pid) {
-    HANDLE hProc = OpenProcess(SYNCHRONIZE, FALSE, pid);
+static void waitForPid(unsigned long pid) {
+#ifdef _WIN32
+    HANDLE hProc = OpenProcess(SYNCHRONIZE, FALSE, (DWORD)pid);
     if (!hProc) return;
     WaitForSingleObject(hProc, 60000);
     CloseHandle(hProc);
+#else
+    waitpid((pid_t)pid, nullptr, 0);
+#endif
 }
 
-static std::string getArg(int argc, char** argv, const std::string& key) {
-    for (int i = 1; i < argc - 1; i++) {
-        if (std::string(argv[i]) == key)
-            return std::string(argv[i + 1]);
-    }
-    return "";
+static void sleepMs(unsigned int ms) {
+#ifdef _WIN32
+    Sleep(ms);
+#else
+    usleep((useconds_t)ms * 1000);
+#endif
 }
 
-int main(int argc, char** argv) {
-    std::string pidStr = getArg(argc, argv, "--pid");
-    std::string zipPath = getArg(argc, argv, "--zip");
-    std::string destDir = getArg(argc, argv, "--dir");
-
-    if (pidStr.empty() || zipPath.empty() || destDir.empty())
-        return 1;
-
-    DWORD pid = (DWORD)std::stoul(pidStr);
-
-    waitForPid(pid);
-
-    Sleep(500);
-
-    if (!unzipFile(zipPath, destDir))
-        return 2;
-
-    fs::remove(zipPath);
-
-    std::string exePath = destDir + "\\CompactLauncher.exe";
-    for (char& c : exePath) if (c == '/') c = '\\';
-    std::string dirWin = destDir;
+static void launchApp(const std::string& exePath, const std::string& workDir) {
+#ifdef _WIN32
+    std::string exeWin = exePath;
+    std::string dirWin = workDir;
+    for (char& c : exeWin) if (c == '/') c = '\\';
     for (char& c : dirWin) if (c == '/') c = '\\';
 
-    std::string cmd = "\"" + exePath + "\"";
+    std::string cmd = "\"" + exeWin + "\"";
     std::vector<char> cmdBuf(cmd.begin(), cmd.end());
     cmdBuf.push_back(0);
 
@@ -186,10 +178,52 @@ int main(int argc, char** argv) {
 
     if (pi.hProcess) CloseHandle(pi.hProcess);
     if (pi.hThread)  CloseHandle(pi.hThread);
+#else
+    pid_t child = fork();
+    if (child == 0) {
+        if (chdir(workDir.c_str()) != 0) _exit(1);
+        char* args[] = { const_cast<char*>(exePath.c_str()), nullptr };
+        execv(exePath.c_str(), args);
+        _exit(1);
+    }
+#endif
+}
+
+static std::string getArg(int argc, char** argv, const std::string& key) {
+    for (int i = 1; i < argc - 1; i++) {
+        if (std::string(argv[i]) == key)
+            return std::string(argv[i + 1]);
+    }
+    return "";
+}
+
+int main(int argc, char** argv) {
+    std::string pidStr  = getArg(argc, argv, "--pid");
+    std::string zipPath = getArg(argc, argv, "--zip");
+    std::string destDir = getArg(argc, argv, "--dir");
+
+    if (pidStr.empty() || zipPath.empty() || destDir.empty())
+        return 1;
+
+    unsigned long pid = std::stoul(pidStr);
+
+    waitForPid(pid);
+
+    sleepMs(500);
+
+    if (!unzipFile(zipPath, destDir))
+        return 2;
+
+    fs::remove(zipPath);
+
+#ifdef _WIN32
+    std::string exePath = destDir + "\\CompactLauncher.exe";
+    for (char& c : exePath) if (c == '/') c = '\\';
+#else
+    std::string exePath = destDir + "/CompactLauncher";
+#endif
+
+    launchApp(exePath, destDir);
 
     return 0;
 }
-
-#else
-int main() { return 0; }
-#endif
