@@ -110,4 +110,3 @@ jobs:
               name: zip,
               data: fs.readFileSync(zip),
             });
-        shell: pwsh
