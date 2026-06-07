@@ -1,0 +1,113 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-qt6-tools
+            mingw-w64-x86_64-qt6-translations
+
+      - name: Configure
+        run: cmake -B bld -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build bld
+
+      - name: Deploy
+        run: |
+          cd bld
+          windeployqt6 CompactLauncher.exe
+          ldd CompactLauncher.exe | grep mingw | awk '{print $3}' | xargs -I{} cp {} .
+          ldd updater.exe | grep mingw | awk '{print $3}' | xargs -I{} cp {} .
+
+      - name: Zip
+        run: |
+          TAG="${{ github.ref_name }}"
+          cd bld
+          7z a "../CompactLauncher-windows-x64.zip" \
+            CompactLauncher.exe \
+            updater.exe \
+            *.dll \
+            generic/ \
+            imageformats/ \
+            networkinformation/ \
+            platforms/ \
+            styles/ \
+            tls/ \
+            translations/
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          TAG="${{ github.ref_name }}"
+          REPO="${{ github.repository }}"
+          PREV=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          if [ -n "$PREV" ]; then
+            COMMITS=$(git log "$PREV..HEAD" --pretty=format:"%H|%s" --no-merges)
+          else
+            COMMITS=$(git log --pretty=format:"%H|%s" --no-merges)
+          fi
+
+          BODY="**CompactLauncher $TAG**"$'\n'
+          while IFS='|' read -r hash msg; do
+            [ -z "$hash" ] && continue
+            URL="https://github.com/$REPO/commit/$hash"
+            BODY+="- $msg :: $URL"$'\n'
+          done <<< "$COMMITS"
+
+          {
+            echo "body<<EOF_NOTES"
+            echo "$BODY"
+            echo "EOF_NOTES"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag  = context.ref.replace('refs/tags/', '');
+            const body = `${{ steps.notes.outputs.body }}`;
+            const fs   = require('fs');
+            const zip  = 'CompactLauncher-windows-x64.zip';
+
+            const release = await github.rest.repos.createRelease({
+              ...context.repo,
+              tag_name: tag,
+              name: `CompactLauncher ${tag}`,
+              body: body,
+            });
+
+            await github.rest.repos.uploadReleaseAsset({
+              ...context.repo,
+              release_id: release.data.id,
+              name: zip,
+              data: fs.readFileSync(zip),
+            });
+        shell: pwsh
