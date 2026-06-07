@@ -34,14 +34,14 @@ jobs:
             mingw-w64-x86_64-qt6-translations
 
       - name: Configure
-        run: cmake -B bld -G Ninja -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S src -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build bld
+        run: cmake --build build
 
       - name: Deploy
         run: |
-          cd bld
+          cd build
           windeployqt6 CompactLauncher.exe
           ldd CompactLauncher.exe | grep mingw | awk '{print $3}' | xargs -I{} cp {} .
           ldd updater.exe | grep mingw | awk '{print $3}' | xargs -I{} cp {} .
@@ -49,7 +49,7 @@ jobs:
       - name: Zip
         run: |
           TAG="${{ github.ref_name }}"
-          cd bld
+          cd build
           7z a "../CompactLauncher-windows-x64.zip" \
             CompactLauncher.exe \
             updater.exe \
