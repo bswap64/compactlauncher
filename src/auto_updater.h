@@ -95,13 +95,22 @@ public:
         : QDialog(parent), m_info(info), m_cancelled(false)
     {
         setWindowTitle("Updating...");
-        setFixedWidth(250);
+        setFixedWidth(325);
         setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
         auto* layout = new QVBoxLayout(this);
 
         m_statusLabel = new QLabel("Downloading update...");
         layout->addWidget(m_statusLabel);
+
+        m_progressPercentLabel = new QLabel("Progress: 0.00%");
+        layout->addWidget(m_progressPercentLabel);
+
+        m_speedLabel = new QLabel("Download Speed: 0.00 MB/s");
+        layout->addWidget(m_speedLabel);
+
+        m_sizeLabel = new QLabel("File size: 0.00 MB / 0.00 MB");
+        layout->addWidget(m_sizeLabel);
 
         m_progressBar = new QProgressBar();
         m_progressBar->setRange(0, 100);
@@ -195,16 +204,38 @@ private:
         DWORD totalRead = 0;
         bool ok = true;
 
+        ULONGLONG lastTime = GetTickCount64();
+        DWORD lastRead = 0;
+
         while (!m_cancelled) {
             if (!InternetReadFile(hUrl, buf.data(), (DWORD)buf.size(), &read)) { ok = false; break; }
             if (read == 0) break;
             out.write(buf.data(), read);
             if (!out) { ok = false; break; }
             totalRead += read;
+
+            ULONGLONG now = GetTickCount64();
+            ULONGLONG elapsed = now - lastTime;
+            double speed = 0.0;
+            if (elapsed >= 200) {
+                speed = (double)(totalRead - lastRead) / (elapsed / 1000.0) / (1024.0 * 1024.0);
+                lastTime = now;
+                lastRead = totalRead;
+            }
+
             if (contentLen > 0) {
                 int pct = (int)((long long)totalRead * 100 / contentLen);
-                QMetaObject::invokeMethod(this, [this, pct]() {
+                double pctD = (double)totalRead * 100.0 / contentLen;
+                double totalMB = contentLen / (1024.0 * 1024.0);
+                double doneMB = totalRead / (1024.0 * 1024.0);
+                double sp = speed;
+                QMetaObject::invokeMethod(this, [this, pct, pctD, sp, doneMB, totalMB]() {
                     m_progressBar->setValue(pct);
+                    m_progressPercentLabel->setText(QString("Progress: %1%").arg(pctD, 0, 'f', 2));
+                    if (sp > 0.0)
+                        m_speedLabel->setText(QString("Download Speed: %1 MB/s").arg(sp, 0, 'f', 2));
+                    m_sizeLabel->setText(QString("File size: %1 MB / %2 MB")
+                        .arg(doneMB, 0, 'f', 2).arg(totalMB, 0, 'f', 2));
                 }, Qt::QueuedConnection);
             }
         }
@@ -266,6 +297,9 @@ private:
     std::atomic<bool> m_cancelled;
     QProgressBar* m_progressBar;
     QLabel*       m_statusLabel;
+    QLabel*       m_progressPercentLabel;
+    QLabel*       m_speedLabel;
+    QLabel*       m_sizeLabel;
     QPushButton*  m_cancelBtn;
 };
 
